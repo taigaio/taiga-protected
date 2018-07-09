@@ -1,0 +1,89 @@
+import os
+import string
+from unittest import mock
+
+from werkzeug.test import create_environ, run_wsgi_app
+from werkzeug.wrappers import Request
+
+from hypothesis import given
+import hypothesis.strategies as st
+
+import server
+
+
+def not_valid_url(base):  # pragma: no cover
+    return '/%s' % base
+
+
+def not_valid_url_strategy():
+    return st.builds(
+        not_valid_url,
+        st.text()
+    )
+
+@given(not_valid_url_strategy())
+def test_not_valid_url_raises_404(path):
+    env = create_environ(method='GET', path=path)
+    (app_iter, status, headers) = run_wsgi_app(server.app, env)
+    status = int(status[:3])
+    assert status == 404
+
+
+def valid_url(base, p1, p2, p3, p4, p5, basename, ext):  # pragma: no cover
+    return '/%s/%s/%s/%s/%s/%s/%s.%s' % (base, p1, p2, p3, p4, p5, basename, ext)
+
+
+hexchars = '1234567890abcdef'
+valid_chars = string.ascii_lowercase + string.digits + '-_'
+
+def valid_url_strategy():
+    return st.builds(
+        valid_url,
+        base=st.sampled_from(['attachments', 'project', 'user']),
+        p1=st.text(alphabet=hexchars, min_size=1, max_size=1),
+        p2=st.text(alphabet=hexchars, min_size=1, max_size=1),
+        p3=st.text(alphabet=hexchars, min_size=1, max_size=1),
+        p4=st.text(alphabet=hexchars, min_size=1, max_size=1),
+        p5=st.text(alphabet=hexchars, min_size=29, max_size=29),
+        basename=st.text(alphabet=valid_chars, min_size=1, max_size=100),
+        ext=st.text(alphabet=valid_chars, min_size=1, max_size=100),
+    )
+
+
+@given(valid_url_strategy())
+def test_valid_url_without_token(path):
+    env = create_environ(method='GET', path=path)
+    (app_iter, status, headers) = run_wsgi_app(server.app, env)
+    status = int(status[:3])
+    assert status == 403
+    assert 'X-Accel-Redirect' not in headers
+
+
+@given(valid_url_strategy())
+def test_valid_url_with_valid_token(path):
+    env = create_environ(method='GET', path=path)
+    with mock.patch('server.token_is_valid') as is_valid:
+        is_valid.return_value = True
+        (app_iter, status, headers) = run_wsgi_app(server.app, env)
+    assert is_valid.called is True
+
+    status = int(status[:3])
+    assert status == 200
+    assert 'X-Accel-Redirect' in headers
+    assert '/_protected' + path == headers['X-Accel-Redirect']
+
+
+@given(st.none() | st.text())
+def test_token_is_valid_false(token):
+    os.environ['SECRET_KEY'] = 'taiga-secret-key'
+    assert server.token_is_valid(token) is False
+
+
+def test_token_is_valid_true():
+    from itsdangerous import TimestampSigner
+    secret_key = 'taiga-secret-key'
+    signer = TimestampSigner(secret_key)
+    token = signer.sign('Hi!')
+
+    os.environ['SECRET_KEY'] = secret_key
+    assert server.token_is_valid(token) is True
