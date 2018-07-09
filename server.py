@@ -11,16 +11,13 @@ url_map = Map([
 ])
 
 
-def token_is_valid(token):
+def token_is_valid(token, path):
     if not token:
         return False
     secret_key = os.environ['SECRET_KEY']
-    signer = TimestampSigner(secret_key)
-    try:
-        signer.unsign(token, max_age=300)
-    except BadData:
-        return False
-    return True
+    signer = TimestampSigner(secret_key, sep=':', salt='taiga-protected')
+    signature = '%s:%s' % (path, token)
+    return signer.validate(signature, max_age=300)
 
 
 def build_path(args):
@@ -35,14 +32,12 @@ def app(environ, start_response):
     except HTTPException as exc:
         return exc(environ, start_response)
 
+    path = build_path(args)
+
     request = Request(environ)
     token = request.args.get('token')
-    if not token_is_valid(token):
+    if not token_is_valid(token, path):
         return Forbidden()(environ, start_response)
-
-    print('token:', token)
-
-    path = build_path(args)
 
     data = b''
     status = '200 OK'

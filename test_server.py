@@ -73,17 +73,27 @@ def test_valid_url_with_valid_token(path):
     assert '/_protected' + path == headers['X-Accel-Redirect']
 
 
-@given(st.none() | st.text())
-def test_token_is_valid_false(token):
+@given(
+    st.none() | st.text(),
+    valid_url_strategy(),
+)
+def test_token_is_valid_false(token, path):
     os.environ['SECRET_KEY'] = 'taiga-secret-key'
-    assert server.token_is_valid(token) is False
+    assert server.token_is_valid(token, path) is False
 
 
-def test_token_is_valid_true():
+def sign(value):
+    """Implements the same signature algorithm as the client."""
     from itsdangerous import TimestampSigner
-    secret_key = 'taiga-secret-key'
-    signer = TimestampSigner(secret_key)
-    token = signer.sign('Hi!')
+    signer = TimestampSigner(os.environ['SECRET_KEY'], sep=':', salt='taiga-protected')
+    signature = signer.sign(value)
+    signature = signature.decode('utf-8')
+    return signature.replace(value + ':', '')
 
+
+@given(valid_url_strategy())
+def test_token_is_valid_true(path):
+    secret_key = 'taiga-secret-key'
     os.environ['SECRET_KEY'] = secret_key
-    assert server.token_is_valid(token) is True
+    token = sign(path)
+    assert server.token_is_valid(token, path) is True
