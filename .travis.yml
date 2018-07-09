@@ -8,5 +8,8 @@ before_install:
   - pip install pipenv
 install:
   - travis_retry pipenv sync --dev
+  - pip install coveralls
 script:
   - pipenv run -- pytest --cov-report term-missing:skip-covered --cov .
+after_success:
+  - coveralls
