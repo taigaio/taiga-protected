@@ -7,6 +7,6 @@ env:
 before_install:
   - pip install pipenv
 install:
-  - travis_retry pipenv install
+  - travis_retry pipenv sync --dev
 script:
   - pipenv run -- pytest --cov-report term-missing:skip-covered --cov .
