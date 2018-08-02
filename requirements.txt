@@ -1,0 +1,4 @@
+-i https://pypi.org/simple
+gunicorn==19.9.0
+itsdangerous==0.24
+werkzeug==0.14.1
