@@ -1,0 +1,5 @@
+[run]
+source = server.py,test_server.py
+omit =
+    .tox/*
+    .venv/*
