@@ -8,6 +8,9 @@ from werkzeug.wrappers import Request
 from hypothesis import given
 import hypothesis.strategies as st
 
+# It is necessary to set environment variable before import server
+os.environ.setdefault("SECRET_KEY", "taiga-secret-key")
+
 import server
 
 
@@ -74,7 +77,6 @@ def test_valid_url_with_valid_token(path):
 
 @given(st.none() | st.text(), valid_url_strategy())
 def test_token_is_valid_false(token, path):
-    os.environ["SECRET_KEY"] = "taiga-secret-key"
     assert server.token_is_valid(token, path) is False
 
 
@@ -90,7 +92,5 @@ def sign(value):
 
 @given(valid_url_strategy())
 def test_token_is_valid_true(path):
-    secret_key = "taiga-secret-key"
-    os.environ["SECRET_KEY"] = secret_key
     token = sign(path)
     assert server.token_is_valid(token, path) is True
