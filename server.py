@@ -11,11 +11,25 @@ url_map = Map([
 ])
 
 
+class Configuration:
+    def __init__(self):
+        self.secret_key = None
+
+    def load(self):
+        try:
+            self.secret_key = os.environ['SECRET_KEY']
+        except KeyError:
+            raise Exception('Invalid configuration: unable to get SECRET_KEY environment variable') from None
+
+
+CONFIG = Configuration()
+CONFIG.load()
+
+
 def token_is_valid(token, path):
     if not token:
         return False
-    secret_key = os.environ['SECRET_KEY']
-    signer = TimestampSigner(secret_key, sep=':', salt='taiga-protected')
+    signer = TimestampSigner(CONFIG.secret_key, sep=':', salt='taiga-protected')
     signature = '%s:%s' % (path, token)
     return signer.validate(signature, max_age=3600)
 
