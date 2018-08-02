@@ -14,6 +14,7 @@ url_map = Map([
 class Configuration:
     def __init__(self):
         self.secret_key = None
+        self.max_age = 3600
 
     def load(self):
         try:
@@ -31,7 +32,7 @@ def token_is_valid(token, path):
         return False
     signer = TimestampSigner(CONFIG.secret_key, sep=':', salt='taiga-protected')
     signature = '%s:%s' % (path, token)
-    return signer.validate(signature, max_age=3600)
+    return signer.validate(signature, max_age=CONFIG.max_age)
 
 
 def build_path(args):
