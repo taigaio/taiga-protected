@@ -17,12 +17,12 @@ def token_is_valid(token, path):
     secret_key = os.environ['SECRET_KEY']
     signer = TimestampSigner(secret_key, sep=':', salt='taiga-protected')
     signature = '%s:%s' % (path, token)
-    return signer.validate(signature, max_age=300)
+    return signer.validate(signature, max_age=3600)
 
 
 def build_path(args):
     keys = 'basepath', 'p1', 'p2', 'p3', 'p4', 'p5', 'basename'
-    return '/_protected/' + '/'.join(args[k] for k in keys)
+    return '/'.join(args[k] for k in keys)
 
 
 def app(environ, start_response):
@@ -39,11 +39,12 @@ def app(environ, start_response):
     if not token_is_valid(token, path):
         return Forbidden()(environ, start_response)
 
+    protected_path = '/_protected/' + path
     data = b''
     status = '200 OK'
     response_headers = [
         ('Content-Length', str(len(data))),
-        ('X-Accel-Redirect', path)
+        ('X-Accel-Redirect', protected_path)
     ]
     start_response(status, response_headers)
     return iter([data])
