@@ -23,7 +23,7 @@ class Configuration:
     def load(self):
         try:
             self.secret_key = os.environ["SECRET_KEY"]
-        except KeyError:
+        except KeyError:  # pragma: no cover
             raise Exception(
                 "Invalid configuration: unable to get SECRET_KEY environment variable"
             ) from None
