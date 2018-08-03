@@ -82,9 +82,9 @@ def test_token_is_valid_false(token, path):
 
 def sign(value):
     """Implements the same signature algorithm as the client."""
-    from itsdangerous import TimestampSigner
+    from _vendor import itsdangerous
 
-    signer = TimestampSigner(os.environ["SECRET_KEY"], sep=":", salt="taiga-protected")
+    signer = itsdangerous.TimestampSigner(os.environ["SECRET_KEY"], sep=":", salt="taiga-protected")
     signature = signer.sign(value)
     signature = signature.decode("utf-8")
     return signature.replace(value + ":", "")

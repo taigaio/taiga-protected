@@ -6,7 +6,6 @@ name = "pypi"
 [packages]
 gunicorn = "*"
 werkzeug = "*"
-itsdangerous = "*"
 
 [dev-packages]
 pytest = "*"

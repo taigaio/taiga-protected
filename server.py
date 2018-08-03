@@ -5,7 +5,7 @@ from werkzeug.exceptions import HTTPException, Forbidden
 from werkzeug.routing import Map, Rule
 from werkzeug.wrappers import Request
 
-from itsdangerous import BadData, TimestampSigner
+from _vendor import itsdangerous
 
 
 logger = logging.getLogger("taiga_protected.server")
@@ -41,12 +41,12 @@ CONFIG.load()
 def token_is_valid(token, path):
     if not token:
         return False
-    signer = TimestampSigner(CONFIG.secret_key, sep=":", salt="taiga-protected")
+    signer = itsdangerous.TimestampSigner(CONFIG.secret_key, sep=":", salt="taiga-protected")
     signature = "%s:%s" % (path, token)
 
     try:
-        d = signer.unsign(signature, max_age=CONFIG.max_age)
-    except BadData as exc:
+        value, ts = signer.unsign(signature, max_age=CONFIG.max_age, return_timestamp=True)
+    except itsdangerous.BadData as exc:
         logger.warning(
             "Token is not valid signature=%r max_age=%s",
             signature,
