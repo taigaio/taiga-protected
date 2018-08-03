@@ -22,6 +22,16 @@ def not_valid_url_strategy():
     return st.builds(not_valid_url, st.text())
 
 
+def sign(value):
+    """Implements the same signature algorithm as the client."""
+    from _vendor import itsdangerous
+
+    signer = itsdangerous.TimestampSigner(os.environ["SECRET_KEY"], sep=":", salt="taiga-protected")
+    signature = signer.sign(value)
+    signature = signature.decode("utf-8")
+    return signature.replace(value + ":", "")
+
+
 @given(not_valid_url_strategy())
 def test_not_valid_url_raises_404(path):
     env = create_environ(method="GET", path=path)
@@ -80,48 +90,7 @@ def test_token_is_valid_false(token, path):
     assert server.token_is_valid(token, path) is False
 
 
-def sign(value):
-    """Implements the same signature algorithm as the client."""
-    from _vendor import itsdangerous
-
-    signer = itsdangerous.TimestampSigner(os.environ["SECRET_KEY"], sep=":", salt="taiga-protected")
-    signature = signer.sign(value)
-    signature = signature.decode("utf-8")
-    return signature.replace(value + ":", "")
-
-
 @given(valid_url_strategy())
 def test_token_is_valid_true(path):
     token = sign(path)
     assert server.token_is_valid(token, path) is True
-
-
-def test_max_epoch_base_is_correct():
-    """Test EPOCH .
-
-    The package `itsdangerous` used to use base the EPOCH from 2011/01/01 in UTC
-
-    .. code::
-
-        EPOCH = 1293840000
-
-    It was solved in https://github.com/pallets/itsdangerous/commit/9981a90b46160ac71505cb790c4bda4ee037ebb4
-    but, as of Aug 3rd, there is no release yet.
-
-    To test this behaviour I just issued a signature in the past
-    that should always fail.
-
-    .. code::
-
-        >>> from django.core.signing import TimestampSigner
-        >>> signer = TimestampSigner("taiga-secret-key", sep=":", salt="taiga-protected")
-        >>> name = 'attachments/1/2/3/4/5/filename.ext'
-        >>> signature = signer.sign(name)
-        >>> print(signature.partition(":")[-1])
-        1flYWO:E3Ph3KR0BuhId4RVyJBwSjpzN38
-
-    """
-
-    path = 'attachments/1/2/3/4/5/filename.ext'
-    token = '1flYWO:E3Ph3KR0BuhId4RVyJBwSjpzN38'
-    assert server.token_is_valid(token, path) is False
