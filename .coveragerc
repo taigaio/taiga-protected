@@ -3,3 +3,4 @@ source = server.py,test_server.py
 omit =
     .tox/*
     .venv/*
+    _vendor/*
