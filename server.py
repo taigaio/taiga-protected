@@ -55,6 +55,7 @@ def token_is_valid(token, path):
         )
         return False
 
+    logger.debug('path=%r ts=%s ', value, ts)
     return True
 
 
