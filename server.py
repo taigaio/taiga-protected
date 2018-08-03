@@ -41,22 +41,26 @@ CONFIG.load()
 def token_is_valid(token, path):
     if not token:
         return False
-    signer = itsdangerous.TimestampSigner(CONFIG.secret_key, sep=":", salt="taiga-protected")
+    signer = itsdangerous.TimestampSigner(
+        CONFIG.secret_key, sep=":", salt="taiga-protected"
+    )
     signature = "%s:%s" % (path, token)
 
     try:
-        value, ts = signer.unsign(signature, max_age=CONFIG.max_age, return_timestamp=True)
+        value, ts = signer.unsign(
+            signature, max_age=CONFIG.max_age, return_timestamp=True
+        )
     except itsdangerous.BadData as exc:
         logger.warning(
             "Token is not valid signature=%r max_age=%s date_signed=%r",
             signature,
             CONFIG.max_age,
-            getattr(exc, 'date_signed', 'Empty'),
+            getattr(exc, "date_signed", "Empty"),
             exc_info=True,
         )
         return False
 
-    logger.debug('path=%r ts=%s ', value, ts)
+    logger.debug("path=%r ts=%s ", value, ts)
     return True
 
 
