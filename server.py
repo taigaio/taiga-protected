@@ -48,9 +48,10 @@ def token_is_valid(token, path):
         value, ts = signer.unsign(signature, max_age=CONFIG.max_age, return_timestamp=True)
     except itsdangerous.BadData as exc:
         logger.warning(
-            "Token is not valid signature=%r max_age=%s",
+            "Token is not valid signature=%r max_age=%s date_signed=%r",
             signature,
             CONFIG.max_age,
+            getattr(exc, 'date_signed', 'Empty'),
             exc_info=True,
         )
         return False
