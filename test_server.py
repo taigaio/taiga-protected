@@ -64,7 +64,21 @@ def valid_url_strategy():
     )
 
 
-@given(valid_url_strategy())
+def protected_url_strategy():
+    return st.builds(
+        valid_url,
+        base=st.sampled_from(["attachments"]),
+        p1=st.text(alphabet=hexchars, min_size=1, max_size=1),
+        p2=st.text(alphabet=hexchars, min_size=1, max_size=1),
+        p3=st.text(alphabet=hexchars, min_size=1, max_size=1),
+        p4=st.text(alphabet=hexchars, min_size=1, max_size=1),
+        p5=st.text(alphabet=hexchars, min_size=29, max_size=29),
+        basename=st.text(alphabet=valid_chars, min_size=1, max_size=100),
+        ext=st.text(alphabet=valid_chars, min_size=1, max_size=100),
+    )
+
+
+@given(protected_url_strategy())
 def test_valid_url_without_token(path):
     env = create_environ(method="GET", path=path)
     (app_iter, status, headers) = run_wsgi_app(server.app, env)
@@ -73,7 +87,7 @@ def test_valid_url_without_token(path):
     assert "X-Accel-Redirect" not in headers
 
 
-@given(valid_url_strategy())
+@given(protected_url_strategy())
 def test_valid_url_with_valid_token(path):
     env = create_environ(method="GET", path=path)
     with mock.patch("server.token_is_valid") as is_valid:

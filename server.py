@@ -78,10 +78,11 @@ def app(environ, start_response):
 
     path = build_path(args)
 
-    request = Request(environ)
-    token = request.args.get("token")
-    if not token_is_valid(token, path):
-        return Forbidden()(environ, start_response)
+    if args["basepath"] == "attachments":
+        request = Request(environ)
+        token = request.args.get("token")
+        if not token_is_valid(token, path):
+            return Forbidden()(environ, start_response)
 
     protected_path = "/_protected/" + path
     data = b""
