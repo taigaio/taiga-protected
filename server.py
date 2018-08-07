@@ -20,10 +20,17 @@ url_map = Map(
 )
 
 
+def safe_int(s):
+    try:
+        return int(s)
+    except (ValueError, TypeError):
+        return None
+
+
 class Configuration:
     def __init__(self):
         self.secret_key = None
-        self.max_age = 3600
+        self.max_age = os.environ.get("MAX_AGE", None) or 3600
 
     def load(self):
         try:

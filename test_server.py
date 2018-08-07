@@ -5,6 +5,8 @@ from unittest import mock
 from werkzeug.test import create_environ, run_wsgi_app
 from werkzeug.wrappers import Request
 
+import pytest
+
 from hypothesis import given
 import hypothesis.strategies as st
 
@@ -110,3 +112,11 @@ def test_token_is_valid_false(token, path):
 def test_token_is_valid_true(path):
     token = sign(path)
     assert server.token_is_valid(token, path) is True
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [("42", 42), ("", None), (None, None), ("a", None), ("3.14", None)],
+)
+def test_safe_int(value, expected):
+    assert expected == server.safe_int(value)
