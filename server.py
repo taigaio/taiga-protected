@@ -1,5 +1,8 @@
 import logging
 import os
+from pathlib import Path
+
+from dotenv import load_dotenv
 
 from werkzeug.exceptions import HTTPException, Forbidden
 from werkzeug.routing import Map, Rule
@@ -9,6 +12,11 @@ from _vendor import itsdangerous
 
 
 logger = logging.getLogger("taiga_protected.server")
+
+
+# Load config file if exists
+config_file = Path(__file__).parent / ".env"
+load_dotenv(str(config_file))
 
 
 url_map = Map(

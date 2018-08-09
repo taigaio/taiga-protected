@@ -12,6 +12,17 @@ This project is a part of the system. The complete system is integrated by:
 
 - taiga-contrib-protected plugin, an alternative storage system for taiga-back.
 
+Configuration
+=============
+
+The server has 2 configuration options:
+
+- `SECRET_KEY`. This is the shared secret used by the signer.
+
+- `MAX_AGE` (optional). This is the expiration time in seconds.
+
+Options could be set using environment variables or in a `.env` file.
+
 Vendoring
 =========
 
