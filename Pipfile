@@ -12,6 +12,3 @@ python-dotenv = "*"
 pytest = "*"
 pytest-cov = "*"
 hypothesis = "*"
-
-[requires]
-python_version = "3.6"
