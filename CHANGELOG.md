@@ -2,4 +2,4 @@
 
 ## 6.0.0
 
-Bump version
+Compatible with Taiga 6.0.0
