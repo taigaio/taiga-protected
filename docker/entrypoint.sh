@@ -17,6 +17,6 @@ exec gosu taiga gunicorn server:app \
     --max-requests 3600 \
     --max-requests-jitter 360 \
     --timeout 60 \
-    --log-level=debug \
+    --log-level=info \
     --access-logfile - \
     "$@"
