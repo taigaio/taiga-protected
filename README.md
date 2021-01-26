@@ -6,6 +6,33 @@ Taiga6 is just around the corner. Please read [our pre-announcement](https://blo
 
 taiga-protected is a service that implements token validation.
 
+This project is a part of the system. The complete system is integrated by:
+
+- nginx with specific configuration.
+
+- taiga-protected service to validate tokens (this repository)
+
+- [taiga-contrib-protected](https://github.com/taigaio/taiga-contrib-protected) plugin, an alternative storage system for taiga-back.
+
+### Configuration
+
+The server has 2 configuration options:
+
+- `SECRET_KEY`. This is the shared secret used by the signer.
+
+- `MAX_AGE` (optional). This is the expiration time in seconds.
+
+Options could be set using environment variables or in a `.env` file.
+
+## Vendoring
+
+How to update vendored libraries.
+
+.. code::
+
+   pip install -t _vendor -r _vendor/vendor.txt --no-compile --no-deps
+   rm -rf _vendor/*.dist-info/
+
 ## Documentation
 
 Currently, we have authored three main documentation hubs:
@@ -46,3 +73,4 @@ Help us keep the Taiga Community open and inclusive. Please read and follow our 
 Every code patch accepted in Taiga codebase is licensed under [AGPL v3.0](http://www.gnu.org/licenses/agpl-3.0.html). You must be careful to not include any code that can not be licensed under this license.
 
 Please read carefully [our license](https://github.com/taigaio/taiga-back/blob/master/LICENSE) and ask us if you have any questions as well as the [Contribution policy](https://github.com/taigaio/taiga-back/blob/master/CONTRIBUTING.md).
+
