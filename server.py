@@ -5,7 +5,7 @@
 #
 # Copyright (c) 2021-present Kaleidos Ventures SL
 
-__version__ = '6.1.1'
+__version__ = '6.2.0'
 
 
 import logging
