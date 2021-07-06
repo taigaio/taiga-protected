@@ -49,6 +49,7 @@ class Configuration:
     def __init__(self):
         self.secret_key = None
         self.max_age = safe_int(os.environ.get("MAX_AGE", None)) or 3600
+        self.subpath = os.environ.get("TAIGA_SUBPATH", "") or ""
 
     def load(self):
         try:
@@ -109,7 +110,7 @@ def app(environ, start_response):
         if not token_is_valid(token, path):
             return Forbidden()(environ, start_response)
 
-    protected_path = "/_protected/" + path
+    protected_path = f"{CONFIG.subpath}/_protected/{path}"
     data = b""
     status = "200 OK"
     response_headers = [
