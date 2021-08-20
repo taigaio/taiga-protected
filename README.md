@@ -1,5 +1,7 @@
 ## Taiga Protected
 
+&gt; **READ THIS FIRST!**: We recently announced Taiga plans for the future and they greatly affect how we manage this repository and the current Taiga 6 release. Check it [here](https://blog.taiga.io/announcing_taiganext.html).
+
 Taiga Protected is a service that provides token validation services for the taiga-contrib-protected plugin (installed 
 in taiga-back), that requires from a specific Nginx configuration.   
 - Refer to the official [documentation](https://docs.taiga.io/setup-production.html#taiga-back) to
