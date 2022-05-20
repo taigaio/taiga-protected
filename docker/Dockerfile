@@ -53,7 +53,8 @@ RUN set -eux; \
     #  create taiga group and user to use it and give permissions over the code (in entrypoint)
     groupadd --system taiga --gid=999; \
     useradd --system --no-create-home --gid taiga --uid=999 --shell=/bin/bash taiga; \
-    chown -R taiga:taiga /taiga-protected; \
+    chown -R taiga:0 /taiga-protected; \
+    chmod -R g+rwX /taiga-protected; \
     # remove unneeded files and packages
     apt-get purge -y \
        build-essential \
