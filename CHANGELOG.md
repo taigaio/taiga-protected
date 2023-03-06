@@ -1,6 +1,10 @@
 # Changelog
 
-## 6.6.0 (Unreleased)
+## 6.6.1 (Unreleased)
+
+- ...
+
+## 6.6.0 (2023-03-06)
 
 - DOCKER: Use python-3.11-slim as base image
 - Compatible with Taiga 6.6.0
