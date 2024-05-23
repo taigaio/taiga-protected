@@ -31,6 +31,7 @@ load_dotenv(str(config_file))
 
 url_map = Map(
     [
+        Rule("/health", endpoint="health"),
         Rule(
             "/<any(attachments, project, user):basepath>/<p1>/<p2>/<p3>/<p4>/<p5>/<basename>"
         )
@@ -101,6 +102,10 @@ def app(environ, start_response):
         endpoint, args = urls.match()
     except HTTPException as exc:
         return exc(environ, start_response)
+
+    if endpoint == "health":
+        response = Response("OK", status=200)
+        return response(environ, start_response)
 
     path = build_path(args)
 
