@@ -104,8 +104,10 @@ def app(environ, start_response):
         return exc(environ, start_response)
 
     if endpoint == "health":
-        response = Response("OK", status=200)
-        return response(environ, start_response)
+        status = "200 OK"
+        response_headers = [("Content-Type", "text/plain")]
+        start_response(status, response_headers)
+        return [b"OK"]
 
     path = build_path(args)
 
