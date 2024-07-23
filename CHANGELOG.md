@@ -1,8 +1,13 @@
 # Changelog
 
-## 6.8.1 (Unreleased)
+## 6.8.2 (Unreleased)
 
 - ...
+
+## 6.8.1 (2024-07-23)
+
+- Log record should be less severe.
+- Compatible with Taiga 6.8.x
 
 ## 6.8.0 (2024-04-03)
 
