@@ -9,21 +9,34 @@
 set -euo pipefail
 
 
-# Give permission to taiga:taiga after mounting volumes
-echo Give permission to taiga:taiga
-chown -R taiga:taiga /taiga-protected
-
-# Start Taiga processes
+# Give permission to taiga:taiga after mounting volumes (only if running as root)
 echo Starting Taiga Protected
 
-exec gosu taiga gunicorn server:app \
-    --name taiga_protected \
-    --bind 0.0.0.0:8003 \
-    --workers 4 \
-    --worker-tmp-dir /dev/shm \
-    --max-requests 3600 \
-    --max-requests-jitter 360 \
-    --timeout 60 \
-    --log-level=info \
-    --access-logfile - \
-    "$@"
+if [ "$(id -u)" = "0" ]; then
+    echo "Running as root - setting permissions"
+    chown -R taiga:taiga /taiga-protected
+    exec gosu taiga gunicorn server:app \
+        --name taiga_protected \
+        --bind 0.0.0.0:8003 \
+        --workers 4 \
+        --worker-tmp-dir /dev/shm \
+        --max-requests 3600 \
+        --max-requests-jitter 360 \
+        --timeout 60 \
+        --log-level=info \
+        --access-logfile - \
+        "$@"
+else
+    echo "Running as non-root user - skipping chown"
+    exec gunicorn server:app \
+        --name taiga_protected \
+        --bind 0.0.0.0:8003 \
+        --workers 4 \
+        --worker-tmp-dir /dev/shm \
+        --max-requests 3600 \
+        --max-requests-jitter 360 \
+        --timeout 60 \
+        --log-level=info \
+        --access-logfile - \
+        "$@"
+fi
