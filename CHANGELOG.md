@@ -1,8 +1,11 @@
 # Changelog
 
-## 6.11.0 (unreleased)
+## 6.10.2 (unreleased)
 
 - ...
+
+## 6.10.1 (2026-05-18)
+- fix(docker): Use gosu from repos
 
 ## 6.10.0 (2026-04-20)
 - Compatible with Taiga 6.10.0
