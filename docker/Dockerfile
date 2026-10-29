@@ -24,6 +24,7 @@ WORKDIR /taiga-protected
 
 RUN set -eux; \
     apt-get update; \
+    apt-get upgrade -y; \
     # install system dependencies
     apt-get install -y --no-install-recommends \
        build-essential \
@@ -31,9 +32,12 @@ RUN set -eux; \
        gosu \
        git; \
     # install Taiga protected dependencies
-    python -m pip install --upgrade pip; \
-    python -m pip install wheel; \
+    python -m pip install --upgrade pip setuptools wheel; \
     python -m pip install -r requirements.txt; \
+    # pip, setuptools and wheel are only needed to install the dependencies, and pip bundles packages
+    # with known vulnerabilities: remove them from the virtualenv and from the system Python
+    python -m pip uninstall -y pip setuptools wheel; \
+    /usr/local/bin/python -m pip uninstall -y setuptools wheel pip; \
     chmod +x docker/entrypoint.sh; \
     #  create taiga group and user to use it and give permissions over the code (in entrypoint)
     groupadd --system taiga --gid=999; \

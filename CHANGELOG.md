@@ -2,7 +2,8 @@
 
 ## 6.10.2 (unreleased)
 
-- ...
+- fix: update gunicorn, Werkzeug and python-dotenv, which had known vulnerabilities, and regenerate the lock for Python 3.11
+- fix(docker): upgrade the system packages and leave pip, setuptools and wheel out of the image
 
 ## 6.10.1 (2026-05-18)
 - fix(docker): Use gosu from repos

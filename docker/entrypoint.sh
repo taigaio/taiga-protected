@@ -26,4 +26,5 @@ exec gosu taiga gunicorn server:app \
     --timeout 60 \
     --log-level=info \
     --access-logfile - \
+    --no-control-socket \
     "$@"
